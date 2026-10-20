@@ -1,0 +1,17 @@
+# Python / Django
+.venv/
+__pycache__/
+*.pyc
+db.sqlite3
+.pytest_cache/
+
+# Variables de entorno (contienen claves)
+.env
+
+# Node / React
+node_modules/
+dist/
+
+# Editor / sistema
+.vscode/
+.DS_Store
