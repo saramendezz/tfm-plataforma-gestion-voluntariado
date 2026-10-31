@@ -121,4 +121,6 @@ Queda fuera del alcance del proyecto la gestión de recursos materiales, la geol
 
 ## Contexto académico
 
-Este repositorio forma parte de un Trabajo Fin de Máster. `[Universidad / Máster]`, curso `[año]`.
+## Contexto académico
+
+Este repositorio forma parte de un Trabajo Fin de Máster del Máster Universitario en Ingeniería de Software y Sistemas Informáticos de la Universidad Internacional de La Rioja (UNIR), curso 2026-2027.
