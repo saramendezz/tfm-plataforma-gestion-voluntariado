@@ -21,3 +21,12 @@ class IsOrganization(HasRole):
 
 class IsAdminRole(HasRole):
     role = User.Role.ADMIN
+
+class IsVerifiedOrganization(IsOrganization):
+    message = "Tu organización aún no ha sido verificada."
+
+    def has_permission(self, request, view):
+        if not super().has_permission(request, view):
+            return False
+        profile = getattr(request.user, "organization_profile", None)
+        return bool(profile and profile.is_verified)

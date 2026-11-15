@@ -159,6 +159,7 @@ INSTALLED_APPS = [
     "corsheaders",
     "accounts",
     "profiles",
+    "needs",
 ]
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
