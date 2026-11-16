@@ -6,6 +6,8 @@ import Login from "./pages/Login";
 import OrganizationProfile from "./pages/OrganizationProfile";
 import Register from "./pages/Register";
 import VolunteerProfile from "./pages/VolunteerProfile";
+import NeedForm from "./pages/NeedForm";
+import Needs from "./pages/Needs";
 
 export default function App() {
   return (
@@ -23,6 +25,18 @@ export default function App() {
           element={<ProtectedRoute role="organization"><OrganizationProfile /></ProtectedRoute>}
         />
         <Route path="*" element={<Navigate to="/" replace />} />
+        <Route
+          path="/necesidades"
+          element={<ProtectedRoute role="organization"><Needs /></ProtectedRoute>}
+        />
+        <Route
+          path="/necesidades/nueva"
+          element={<ProtectedRoute role="organization"><NeedForm /></ProtectedRoute>}
+        />
+        <Route
+          path="/necesidades/:id"
+          element={<ProtectedRoute role="organization"><NeedForm /></ProtectedRoute>}
+        />
       </Route>
     </Routes>
   );

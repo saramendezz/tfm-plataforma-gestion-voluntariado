@@ -37,14 +37,36 @@ api.interceptors.response.use(
   }
 );
 
+const FIELD_LABELS = {
+  username: "Usuario",
+  email: "Email",
+  password: "Contraseña",
+  role: "Rol",
+  name: "Nombre",
+  title: "Título",
+  description: "Descripción",
+  municipality: "Municipio",
+  province: "Provincia",
+  postal_code: "Código postal",
+  phone: "Teléfono",
+  max_distance_km: "Distancia máxima",
+  start_at: "Inicio",
+  end_at: "Fin",
+  volunteers_needed: "Voluntarios necesarios",
+  required_skills: "Habilidades",
+  skills: "Habilidades",
+};
+
 export function errorMessage(error) {
   const data = error.response?.data;
   if (!data) return "No se pudo conectar con el servidor.";
   if (typeof data === "string") return "Error del servidor.";
   if (data.detail) return data.detail;
   return Object.entries(data)
-    .map(([field, msgs]) => `${field}: ${[].concat(msgs).join(" ")}`)
+    .map(([field, msgs]) => {
+      const text = [].concat(msgs).join(" ");
+      return field === "non_field_errors" ? text : `${FIELD_LABELS[field] ?? field}: ${text}`;
+    })
     .join(" | ");
 }
-
 export default api;
