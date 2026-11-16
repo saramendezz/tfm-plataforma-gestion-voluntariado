@@ -8,6 +8,7 @@ import Register from "./pages/Register";
 import VolunteerProfile from "./pages/VolunteerProfile";
 import NeedForm from "./pages/NeedForm";
 import Needs from "./pages/Needs";
+import Availability from "./pages/Availability";
 
 export default function App() {
   return (
@@ -36,6 +37,10 @@ export default function App() {
         <Route
           path="/necesidades/:id"
           element={<ProtectedRoute role="organization"><NeedForm /></ProtectedRoute>}
+        />
+        <Route
+          path="/disponibilidad"
+          element={<ProtectedRoute role="volunteer"><Availability /></ProtectedRoute>}
         />
       </Route>
     </Routes>

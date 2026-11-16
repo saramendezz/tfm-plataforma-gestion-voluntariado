@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import OrganizationProfile, Skill, VolunteerProfile
+from .models import AvailabilitySlot, OrganizationProfile, Skill, VolunteerProfile
 
 
 @admin.register(Skill)
@@ -21,3 +21,9 @@ class VolunteerProfileAdmin(admin.ModelAdmin):
 class OrganizationProfileAdmin(admin.ModelAdmin):
     list_display = ("name", "municipality", "province", "is_verified")
     list_filter = ("is_verified", "province")
+    list_editable = ("is_verified",)
+
+
+@admin.register(AvailabilitySlot)
+class AvailabilitySlotAdmin(admin.ModelAdmin):
+    list_display = ("volunteer", "start_at", "end_at")

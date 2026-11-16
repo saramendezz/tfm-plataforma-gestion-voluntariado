@@ -78,3 +78,19 @@ class OrganizationProfile(Location):
 
     def __str__(self):
         return self.name
+
+class AvailabilitySlot(models.Model):
+    volunteer = models.ForeignKey(
+        VolunteerProfile,
+        on_delete=models.CASCADE,
+        related_name="availability_slots",
+    )
+    start_at = models.DateTimeField()
+    end_at = models.DateTimeField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["start_at"]
+
+    def __str__(self):
+        return f"{self.volunteer} ({self.start_at:%d/%m/%Y %H:%M})"

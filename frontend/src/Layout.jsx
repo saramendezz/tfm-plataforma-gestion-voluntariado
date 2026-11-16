@@ -23,6 +23,7 @@ export default function Layout() {
         {user?.role === "volunteer" && (
           <nav>
             <NavLink to="/perfil-voluntario">Mi perfil</NavLink>
+            <NavLink to="/disponibilidad">Disponibilidad</NavLink>
           </nav>
         )}
         {user?.role === "organization" && (
