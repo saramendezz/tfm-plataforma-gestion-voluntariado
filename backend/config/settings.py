@@ -160,6 +160,7 @@ INSTALLED_APPS = [
     "accounts",
     "profiles",
     "needs",
+    "matching",
 ]
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
@@ -184,3 +185,5 @@ SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=30),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
 }
+
+MATCHING_WEIGHTS = {"skills": 0.6, "distance": 0.4}

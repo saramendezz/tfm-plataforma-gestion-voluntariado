@@ -15,3 +15,5 @@ dist/
 # Editor / sistema
 .vscode/
 .DS_Store
+
+backend/data/
