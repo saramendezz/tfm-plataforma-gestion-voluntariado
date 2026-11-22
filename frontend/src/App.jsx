@@ -9,6 +9,8 @@ import VolunteerProfile from "./pages/VolunteerProfile";
 import NeedForm from "./pages/NeedForm";
 import Needs from "./pages/Needs";
 import Availability from "./pages/Availability";
+import Candidates from "./pages/Candidates";
+import CompatibleNeeds from "./pages/CompatibleNeeds";
 
 export default function App() {
   return (
@@ -41,6 +43,14 @@ export default function App() {
         <Route
           path="/disponibilidad"
           element={<ProtectedRoute role="volunteer"><Availability /></ProtectedRoute>}
+        />
+        <Route
+          path="/necesidades/:id/candidatos"
+          element={<ProtectedRoute role="organization"><Candidates /></ProtectedRoute>}
+        />
+        <Route
+          path="/necesidades-compatibles"
+          element={<ProtectedRoute role="volunteer"><CompatibleNeeds /></ProtectedRoute>}
         />
       </Route>
     </Routes>

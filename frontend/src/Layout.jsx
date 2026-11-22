@@ -24,6 +24,7 @@ export default function Layout() {
           <nav>
             <NavLink to="/perfil-voluntario">Mi perfil</NavLink>
             <NavLink to="/disponibilidad">Disponibilidad</NavLink>
+            <NavLink to="/necesidades-compatibles">Necesidades para mí</NavLink>
           </nav>
         )}
         {user?.role === "organization" && (

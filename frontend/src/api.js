@@ -61,6 +61,7 @@ export function errorMessage(error) {
   const data = error.response?.data;
   if (!data) return "No se pudo conectar con el servidor.";
   if (typeof data === "string") return "Error del servidor.";
+  if (Array.isArray(data)) return data.join(" ");
   if (data.detail) return data.detail;
   return Object.entries(data)
     .map(([field, msgs]) => {

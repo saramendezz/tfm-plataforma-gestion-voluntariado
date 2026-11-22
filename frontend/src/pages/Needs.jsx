@@ -75,6 +75,9 @@ export default function Needs() {
               <Link className="button" to={`/necesidades/${need.id}`}>
                 Editar
               </Link>
+              <Link className="button" to={`/necesidades/${need.id}/candidatos`}>
+                Candidatos
+              </Link>
               <button onClick={() => closeNeed(need)}>Cerrar</button>
             </div>
           )}
