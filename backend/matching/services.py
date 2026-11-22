@@ -17,11 +17,13 @@ def haversine_km(lat1, lon1, lat2, lon2):
     return 2 * EARTH_RADIUS_KM * asin(sqrt(a))
 
 
-def get_weights():
-    weights = getattr(settings, "MATCHING_WEIGHTS", DEFAULT_WEIGHTS)
+def normalize_weights(weights):
     total = weights["skills"] + weights["distance"]
     return weights["skills"] / total, weights["distance"] / total
 
+
+def get_weights():
+    return normalize_weights(getattr(settings, "MATCHING_WEIGHTS", DEFAULT_WEIGHTS))
 
 def load_coordinates(codes):
     codes = {code for code in codes if code}
@@ -62,7 +64,7 @@ class MatchResult:
         }
 
 
-def evaluate(volunteer, need, coordinates):
+def evaluate(volunteer, need, coordinates, weights=None):
     """Devuelve el resultado de compatibilidad o None si no es candidato.
 
     Se asume que las relaciones del voluntario (habilidades y franjas) y de la
@@ -97,7 +99,7 @@ def evaluate(volunteer, need, coordinates):
 
     skills_score = len(matched) / len(required) if required else 1.0
     distance_score = 1 - distance / max_distance
-    w_skills, w_distance = get_weights()
+    w_skills, w_distance = normalize_weights(weights) if weights else get_weights()
     score = 100 * (w_skills * skills_score + w_distance * distance_score)
     return MatchResult(
         score=score,

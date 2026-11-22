@@ -86,13 +86,13 @@ def make_volunteer(username, postal="08001", skills=(), slots=None, max_km=25, a
     return profile
 
 
-def run(profile, need):
+def run(profile, need, weights=None):
     profile = VolunteerProfile.objects.prefetch_related(
         "skills", "availability_slots"
     ).get(pk=profile.pk)
     need = Need.objects.prefetch_related("required_skills").get(pk=need.pk)
     coordinates = load_coordinates([profile.postal_code, need.postal_code])
-    return evaluate(profile, need, coordinates)
+    return evaluate(profile, need, coordinates, weights)
 
 
 def client_for(user):
@@ -314,3 +314,11 @@ def test_load_postal_codes_averages_and_is_idempotent(tmp_path):
     barcelona = PostalCode.objects.get(code="08001")
     assert barcelona.latitude == pytest.approx(41.5)
     assert barcelona.longitude == pytest.approx(2.5)
+
+@pytest.mark.django_db
+def test_explicit_weights_override_configuration(postal_codes, first_aid):
+    need = make_need(make_org(), skills=[first_aid])
+    vol = make_volunteer("ana", postal="08201", skills=[first_aid])
+    assert run(vol, need).score < 100
+    only_skills = run(vol, need, {"skills": 1, "distance": 0})
+    assert only_skills.score == pytest.approx(100)
