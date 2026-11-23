@@ -48,12 +48,12 @@ class Command(BaseCommand):
         )
 
         rows = []
-        overlaps = {w: [] for w in SKILL_WEIGHTS}
+        overlaps = {w: [] for w in SKILL_WEIGHTS}  # necesidades con más de k candidatos
+        firsts = {w: [] for w in SKILL_WEIGHTS}  # necesidades con 2 o más candidatos
         covered = 0
         for need in needs:
             base = rank_candidates(volunteers, need, coordinates)
-            enough = len(base) >= need.volunteers_needed
-            covered += enough
+            covered += len(base) >= need.volunteers_needed
             self.stdout.write(
                 f"\nNecesidad: {need.title} (necesarios: {need.volunteers_needed}; "
                 f"candidatos: {len(base)})"
@@ -64,33 +64,57 @@ class Command(BaseCommand):
                 weights = {"skills": w_skills, "distance": round(1 - w_skills, 2)}
                 ranking = rank_candidates(volunteers, need, coordinates, weights)
                 overlap = top_overlap(base, ranking, k)
-                overlaps[w_skills].append(overlap)
+                same_first = ranking[0][0].id == base[0][0].id
+                if len(base) > k:
+                    overlaps[w_skills].append(overlap)
+                if len(base) >= 2:
+                    firsts[w_skills].append(same_first)
                 top = ", ".join(v.user.username for v, _ in ranking[:k])
                 self.stdout.write(
-                    f"  habilidades {w_skills:.1f} / distancia {1 - w_skills:.1f}: "
-                    f"{top}  (coincidencia con la base: {overlap:.0%})"
+                    f"  habilidades {w_skills:.1f} / distancia {1 - w_skills:.1f}: {top}  "
+                    f"(top-{k}: {overlap:.0%}; mismo primero: {'sí' if same_first else 'no'})"
                 )
                 rows.append(
-                    [need.title, w_skills, weights["distance"], len(base), top, round(overlap, 2)]
+                    [
+                        need.title,
+                        w_skills,
+                        weights["distance"],
+                        len(base),
+                        top,
+                        round(overlap, 2),
+                        int(same_first),
+                    ]
                 )
 
         self.stdout.write(
             f"\nNecesidades con candidatos suficientes: {covered} de {len(needs)}."
         )
-        self.stdout.write(f"Coincidencia media del top-{k} con los pesos base:")
+        self.stdout.write(
+            f"Coincidencia media del top-{k} (solo necesidades con más de {k} candidatos) "
+            "y coincidencia del primer candidato (necesidades con 2 o más):"
+        )
         for w_skills in SKILL_WEIGHTS:
-            values = [x for x in overlaps[w_skills] if x is not None]
-            if values:
-                mean = sum(values) / len(values)
-                self.stdout.write(
-                    f"  habilidades {w_skills:.1f} / distancia {1 - w_skills:.1f}: {mean:.0%}"
-                )
+            ov, fi = overlaps[w_skills], firsts[w_skills]
+            ov_text = f"{sum(ov) / len(ov):.0%}" if ov else "—"
+            fi_text = f"{sum(fi)} de {len(fi)}" if fi else "—"
+            self.stdout.write(
+                f"  habilidades {w_skills:.1f} / distancia {1 - w_skills:.1f}: "
+                f"top-{k} {ov_text}; mismo primero {fi_text}"
+            )
 
         if options["csv"]:
             with open(options["csv"], "w", newline="", encoding="utf-8") as file:
                 writer = csv.writer(file)
                 writer.writerow(
-                    ["necesidad", "peso_habilidades", "peso_distancia", "candidatos", "top", "coincidencia"]
+                    [
+                        "necesidad",
+                        "peso_habilidades",
+                        "peso_distancia",
+                        "candidatos",
+                        "top",
+                        "coincidencia_top",
+                        "mismo_primero",
+                    ]
                 )
                 writer.writerows(rows)
             self.stdout.write(f"Resultados guardados en {options['csv']}")

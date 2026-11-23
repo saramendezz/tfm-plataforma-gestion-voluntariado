@@ -1,37 +1,37 @@
-necesidad,peso_habilidades,peso_distancia,candidatos,top,coincidencia
-Distribución de alimentos,0.0,1.0,1,demo_vol19,1.0
-Distribución de alimentos,0.2,0.8,1,demo_vol19,1.0
-Distribución de alimentos,0.4,0.6,1,demo_vol19,1.0
-Distribución de alimentos,0.6,0.4,1,demo_vol19,1.0
-Distribución de alimentos,0.8,0.2,1,demo_vol19,1.0
-Distribución de alimentos,1.0,0.0,1,demo_vol19,1.0
-Atención sanitaria básica,0.0,1.0,6,"demo_vol08, demo_vol14, demo_vol03",1.0
-Atención sanitaria básica,0.2,0.8,6,"demo_vol08, demo_vol14, demo_vol03",1.0
-Atención sanitaria básica,0.4,0.6,6,"demo_vol08, demo_vol14, demo_vol03",1.0
-Atención sanitaria básica,0.6,0.4,6,"demo_vol08, demo_vol14, demo_vol03",1.0
-Atención sanitaria básica,0.8,0.2,6,"demo_vol08, demo_vol14, demo_vol03",1.0
-Atención sanitaria básica,1.0,0.0,6,"demo_vol14, demo_vol08, demo_vol03",1.0
-Retirada de escombros,0.0,1.0,5,"demo_vol11, demo_vol23, demo_vol02",1.0
-Retirada de escombros,0.2,0.8,5,"demo_vol11, demo_vol23, demo_vol02",1.0
-Retirada de escombros,0.4,0.6,5,"demo_vol11, demo_vol23, demo_vol02",1.0
-Retirada de escombros,0.6,0.4,5,"demo_vol11, demo_vol23, demo_vol02",1.0
-Retirada de escombros,0.8,0.2,5,"demo_vol11, demo_vol23, demo_vol02",1.0
-Retirada de escombros,1.0,0.0,5,"demo_vol11, demo_vol02, demo_vol12",0.67
-Apoyo a personas mayores,0.0,1.0,9,"demo_vol14, demo_vol08, demo_vol01",0.33
-Apoyo a personas mayores,0.2,0.8,9,"demo_vol14, demo_vol04, demo_vol08",0.67
-Apoyo a personas mayores,0.4,0.6,9,"demo_vol04, demo_vol27, demo_vol14",1.0
-Apoyo a personas mayores,0.6,0.4,9,"demo_vol04, demo_vol27, demo_vol14",1.0
-Apoyo a personas mayores,0.8,0.2,9,"demo_vol04, demo_vol27, demo_vol14",1.0
-Apoyo a personas mayores,1.0,0.0,9,"demo_vol27, demo_vol04, demo_vol14",1.0
-Reparación del suministro eléctrico,0.0,1.0,2,"demo_vol18, demo_vol08",1.0
-Reparación del suministro eléctrico,0.2,0.8,2,"demo_vol18, demo_vol08",1.0
-Reparación del suministro eléctrico,0.4,0.6,2,"demo_vol18, demo_vol08",1.0
-Reparación del suministro eléctrico,0.6,0.4,2,"demo_vol18, demo_vol08",1.0
-Reparación del suministro eléctrico,0.8,0.2,2,"demo_vol18, demo_vol08",1.0
-Reparación del suministro eléctrico,1.0,0.0,2,"demo_vol08, demo_vol18",1.0
-Traducción en el centro de acogida,0.0,1.0,6,"demo_vol10, demo_vol23, demo_vol25",0.67
-Traducción en el centro de acogida,0.2,0.8,6,"demo_vol25, demo_vol26, demo_vol10",1.0
-Traducción en el centro de acogida,0.4,0.6,6,"demo_vol25, demo_vol26, demo_vol10",1.0
-Traducción en el centro de acogida,0.6,0.4,6,"demo_vol25, demo_vol26, demo_vol10",1.0
-Traducción en el centro de acogida,0.8,0.2,6,"demo_vol25, demo_vol26, demo_vol10",1.0
-Traducción en el centro de acogida,1.0,0.0,6,"demo_vol25, demo_vol26, demo_vol10",1.0
+necesidad,peso_habilidades,peso_distancia,candidatos,top,coincidencia_top,mismo_primero
+Distribución de alimentos,0.0,1.0,1,demo_vol19,1.0,1
+Distribución de alimentos,0.2,0.8,1,demo_vol19,1.0,1
+Distribución de alimentos,0.4,0.6,1,demo_vol19,1.0,1
+Distribución de alimentos,0.6,0.4,1,demo_vol19,1.0,1
+Distribución de alimentos,0.8,0.2,1,demo_vol19,1.0,1
+Distribución de alimentos,1.0,0.0,1,demo_vol19,1.0,1
+Atención sanitaria básica,0.0,1.0,6,"demo_vol08, demo_vol14, demo_vol03",1.0,1
+Atención sanitaria básica,0.2,0.8,6,"demo_vol08, demo_vol14, demo_vol03",1.0,1
+Atención sanitaria básica,0.4,0.6,6,"demo_vol08, demo_vol14, demo_vol03",1.0,1
+Atención sanitaria básica,0.6,0.4,6,"demo_vol08, demo_vol14, demo_vol03",1.0,1
+Atención sanitaria básica,0.8,0.2,6,"demo_vol08, demo_vol14, demo_vol03",1.0,1
+Atención sanitaria básica,1.0,0.0,6,"demo_vol14, demo_vol08, demo_vol03",1.0,0
+Retirada de escombros,0.0,1.0,5,"demo_vol11, demo_vol23, demo_vol02",1.0,1
+Retirada de escombros,0.2,0.8,5,"demo_vol11, demo_vol23, demo_vol02",1.0,1
+Retirada de escombros,0.4,0.6,5,"demo_vol11, demo_vol23, demo_vol02",1.0,1
+Retirada de escombros,0.6,0.4,5,"demo_vol11, demo_vol23, demo_vol02",1.0,1
+Retirada de escombros,0.8,0.2,5,"demo_vol11, demo_vol23, demo_vol02",1.0,1
+Retirada de escombros,1.0,0.0,5,"demo_vol11, demo_vol02, demo_vol12",0.67,1
+Apoyo a personas mayores,0.0,1.0,9,"demo_vol14, demo_vol08, demo_vol01",0.33,0
+Apoyo a personas mayores,0.2,0.8,9,"demo_vol14, demo_vol04, demo_vol08",0.67,0
+Apoyo a personas mayores,0.4,0.6,9,"demo_vol04, demo_vol27, demo_vol14",1.0,1
+Apoyo a personas mayores,0.6,0.4,9,"demo_vol04, demo_vol27, demo_vol14",1.0,1
+Apoyo a personas mayores,0.8,0.2,9,"demo_vol04, demo_vol27, demo_vol14",1.0,1
+Apoyo a personas mayores,1.0,0.0,9,"demo_vol27, demo_vol04, demo_vol14",1.0,0
+Reparación del suministro eléctrico,0.0,1.0,2,"demo_vol18, demo_vol08",1.0,1
+Reparación del suministro eléctrico,0.2,0.8,2,"demo_vol18, demo_vol08",1.0,1
+Reparación del suministro eléctrico,0.4,0.6,2,"demo_vol18, demo_vol08",1.0,1
+Reparación del suministro eléctrico,0.6,0.4,2,"demo_vol18, demo_vol08",1.0,1
+Reparación del suministro eléctrico,0.8,0.2,2,"demo_vol18, demo_vol08",1.0,1
+Reparación del suministro eléctrico,1.0,0.0,2,"demo_vol08, demo_vol18",1.0,0
+Traducción en el centro de acogida,0.0,1.0,6,"demo_vol10, demo_vol23, demo_vol25",0.67,0
+Traducción en el centro de acogida,0.2,0.8,6,"demo_vol25, demo_vol26, demo_vol10",1.0,1
+Traducción en el centro de acogida,0.4,0.6,6,"demo_vol25, demo_vol26, demo_vol10",1.0,1
+Traducción en el centro de acogida,0.6,0.4,6,"demo_vol25, demo_vol26, demo_vol10",1.0,1
+Traducción en el centro de acogida,0.8,0.2,6,"demo_vol25, demo_vol26, demo_vol10",1.0,1
+Traducción en el centro de acogida,1.0,0.0,6,"demo_vol25, demo_vol26, demo_vol10",1.0,1
