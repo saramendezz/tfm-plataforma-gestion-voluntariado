@@ -10,6 +10,7 @@ from matching.models import PostalCode
 from matching.services import evaluate, haversine_km, load_coordinates
 from needs.models import Need
 from profiles.models import AvailabilitySlot, OrganizationProfile, Skill, VolunteerProfile
+from participations.models import Participation
 
 PASSWORD = "Cl4ve-segura-2026"
 HOUR = dt.timedelta(hours=1)
@@ -218,50 +219,6 @@ def test_inactive_skills_are_ignored(postal_codes, first_aid, nursing):
     assert result.skills_score == 1
     assert result.skills_missing == []
 
-
-@pytest.mark.django_db
-def test_candidates_are_ranked_and_filtered(postal_codes, first_aid, nursing):
-    org = make_org()
-    need = make_need(org, skills=[first_aid, nursing])
-    make_volunteer("best", skills=[first_aid, nursing])
-    make_volunteer("mid", postal="08201", skills=[first_aid])
-    make_volunteer("noskills")
-    make_volunteer("far", postal="17001", skills=[first_aid, nursing])
-    make_volunteer("busy", skills=[first_aid], available=False)
-    r = client_for(org.user).get(f"/api/needs/{need.id}/candidates/")
-    assert r.status_code == 200
-    assert [c["username"] for c in r.data] == ["best", "mid"]
-    assert r.data[0]["score"] > r.data[1]["score"]
-    assert r.data[1]["skills_missing"] == ["Enfermería"]
-    assert not {"phone", "email"} & set(r.data[0])
-
-
-@pytest.mark.django_db
-def test_candidates_of_another_organization_is_404(postal_codes):
-    need = make_need(make_org("org1"))
-    other = make_org("org2")
-    r = client_for(other.user).get(f"/api/needs/{need.id}/candidates/")
-    assert r.status_code == 404
-
-
-@pytest.mark.django_db
-def test_candidates_forbidden_for_volunteer_and_unverified_org(postal_codes):
-    need = make_need(make_org())
-    volunteer = make_volunteer("ana")
-    unverified = make_org("nover", verified=False)
-    url = f"/api/needs/{need.id}/candidates/"
-    assert client_for(volunteer.user).get(url).status_code == 403
-    assert client_for(unverified.user).get(url).status_code == 403
-
-
-@pytest.mark.django_db
-def test_candidates_of_closed_need_is_400(postal_codes):
-    org = make_org()
-    need = make_need(org, status=Need.Status.CLOSED)
-    r = client_for(org.user).get(f"/api/needs/{need.id}/candidates/")
-    assert r.status_code == 400
-
-
 @pytest.mark.django_db
 def test_volunteer_sees_only_compatible_open_future_needs_ranked(
     postal_codes, first_aid, nursing
@@ -296,7 +253,7 @@ def test_compatible_needs_forbidden_for_organization(postal_codes):
 def test_matching_endpoints_require_authentication():
     client = APIClient()
     assert client.get("/api/needs/compatible/").status_code == 401
-    assert client.get("/api/needs/1/candidates/").status_code == 401
+    assert client.get("/api/needs/1/potential/").status_code == 401
 
 
 @pytest.mark.django_db
@@ -322,3 +279,53 @@ def test_explicit_weights_override_configuration(postal_codes, first_aid):
     assert run(vol, need).score < 100
     only_skills = run(vol, need, {"skills": 1, "distance": 0})
     assert only_skills.score == pytest.approx(100)
+
+@pytest.mark.django_db
+def test_potential_counts_volunteers_without_identity(postal_codes, first_aid, nursing):
+    org = make_org()
+    need = make_need(org, skills=[first_aid, nursing])
+    make_volunteer("best", skills=[first_aid, nursing])
+    make_volunteer("mid", postal="08201", skills=[first_aid])
+    make_volunteer("noskills")
+    make_volunteer("far", postal="17001", skills=[first_aid, nursing])
+    make_volunteer("busy", skills=[first_aid], available=False)
+    r = client_for(org.user).get(f"/api/needs/{need.id}/potential/")
+    assert r.status_code == 200
+    assert r.data == {
+        "need_id": need.id,
+        "volunteers_needed": 3,
+        "confirmed": 0,
+        "potential_volunteers": 2,
+    }
+
+
+@pytest.mark.django_db
+def test_potential_forbidden_for_volunteer_and_hidden_from_other_org(postal_codes):
+    need = make_need(make_org("org1"))
+    url = f"/api/needs/{need.id}/potential/"
+    assert client_for(make_volunteer("ana").user).get(url).status_code == 403
+    assert client_for(make_org("nover", verified=False).user).get(url).status_code == 403
+    assert client_for(make_org("org2").user).get(url).status_code == 404
+
+
+@pytest.mark.django_db
+def test_compatible_needs_hide_full_removed_and_overlapping(postal_codes, first_aid):
+    org = make_org()
+    full = make_need(org, skills=[first_aid])
+    full.volunteers_needed = 1
+    full.save()
+    joined = make_need(org, skills=[first_aid])
+    removed = make_need(org, skills=[first_aid])
+    make_need(org, skills=[first_aid])  # mismo horario que la que ya ha aceptado
+    ana = make_volunteer("ana", skills=[first_aid])
+    luis = make_volunteer("luis", skills=[first_aid])
+    Participation.objects.create(volunteer=luis, need=full)
+    mine = Participation.objects.create(volunteer=ana, need=joined)
+    Participation.objects.create(
+        volunteer=ana, need=removed, status=Participation.Status.REMOVED
+    )
+    r = client_for(ana.user).get("/api/needs/compatible/")
+    assert r.status_code == 200
+    assert [n["id"] for n in r.data] == [joined.id]
+    assert r.data[0]["participation_id"] == mine.id
+    assert r.data[0]["spots_left"] == 2

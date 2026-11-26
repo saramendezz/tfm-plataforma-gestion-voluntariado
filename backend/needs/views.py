@@ -1,3 +1,4 @@
+from django.db.models import Count, Q
 from django.shortcuts import get_object_or_404
 from rest_framework import generics
 from rest_framework.response import Response
@@ -9,13 +10,21 @@ from .models import Need
 from .serializers import NeedSerializer
 
 
+def with_confirmed(queryset):
+    return queryset.annotate(
+        confirmed_count=Count(
+            "participations", filter=Q(participations__status="confirmed")
+        )
+    )
+
+
 class NeedListCreateView(generics.ListCreateAPIView):
     serializer_class = NeedSerializer
     permission_classes = [IsVerifiedOrganization]
 
     def get_queryset(self):
-        queryset = Need.objects.filter(
-            organization=self.request.user.organization_profile
+        queryset = with_confirmed(
+            Need.objects.filter(organization=self.request.user.organization_profile)
         )
         status = self.request.query_params.get("status")
         if status in Need.Status.values:
@@ -31,8 +40,8 @@ class NeedDetailView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [IsVerifiedOrganization]
 
     def get_queryset(self):
-        return Need.objects.filter(
-            organization=self.request.user.organization_profile
+        return with_confirmed(
+            Need.objects.filter(organization=self.request.user.organization_profile)
         )
 
 

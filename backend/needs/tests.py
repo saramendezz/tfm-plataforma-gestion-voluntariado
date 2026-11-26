@@ -3,7 +3,8 @@ from rest_framework.test import APIClient
 
 from accounts.models import User
 from needs.models import Need
-from profiles.models import OrganizationProfile, Skill
+from profiles.models import OrganizationProfile, Skill, VolunteerProfile
+from participations.models import Participation
 
 PASSWORD = "Cl4ve-segura-2026"
 
@@ -139,3 +140,23 @@ def test_filter_by_status():
 def test_endpoints_require_authentication():
     client = APIClient()
     assert client.get("/api/needs/").status_code == 401
+
+@pytest.mark.django_db
+def test_need_with_participants_cannot_change_schedule_or_shrink():
+    _, client = make_org("org1")
+    need_id = client.post("/api/needs/", payload(), format="json").data["id"]
+    for name in ("ana", "luis"):
+        user = User.objects.create_user(
+            name, f"{name}@example.com", PASSWORD, role=User.Role.VOLUNTEER
+        )
+        volunteer = VolunteerProfile.objects.create(user=user)
+        Participation.objects.create(volunteer=volunteer, need_id=need_id)
+    url = f"/api/needs/{need_id}/"
+
+    r = client.patch(url, {"start_at": "2026-11-20T10:00:00+01:00"}, format="json")
+    assert r.status_code == 400
+    assert client.patch(url, {"volunteers_needed": 1}, format="json").status_code == 400
+    assert client.patch(url, {"volunteers_needed": 2}, format="json").status_code == 200
+    r = client.patch(url, {"title": "Nuevo título"}, format="json")
+    assert r.status_code == 200
+    assert r.data["confirmed_count"] == 2
