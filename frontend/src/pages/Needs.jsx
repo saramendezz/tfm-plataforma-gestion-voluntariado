@@ -67,20 +67,25 @@ export default function Needs() {
             {need.title} <span className={`badge ${need.status}`}>{STATUS_LABELS[need.status]}</span>
           </h2>
           <p>
-            {need.municipality} ({need.province}) · {formatDateTime(need.start_at)} → {formatDateTime(need.end_at)}
+            {need.municipality} ({need.province}) · {formatDateTime(need.start_at)} →{" "}
+            {formatDateTime(need.end_at)}
           </p>
-          <p>Voluntarios necesarios: {need.volunteers_needed}</p>
-          {need.status === "open" && (
-            <div className="actions">
-              <Link className="button" to={`/necesidades/${need.id}`}>
-                Editar
-              </Link>
-              <Link className="button" to={`/necesidades/${need.id}/candidatos`}>
-                Candidatos
-              </Link>
-              <button onClick={() => closeNeed(need)}>Cerrar</button>
-            </div>
-          )}
+          <p>
+            Han aceptado: {need.confirmed_count} de {need.volunteers_needed}
+          </p>
+          <div className="actions">
+            <Link className="button" to={`/necesidades/${need.id}/voluntarios`}>
+              Voluntarios
+            </Link>
+            {need.status === "open" && (
+              <>
+                <Link className="button" to={`/necesidades/${need.id}`}>
+                  Editar
+                </Link>
+                <button onClick={() => closeNeed(need)}>Cerrar</button>
+              </>
+            )}
+          </div>
         </article>
       ))}
     </>

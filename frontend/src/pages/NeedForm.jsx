@@ -44,6 +44,8 @@ export default function NeedForm() {
   if (!form) return error ? <p className="error">{error}</p> : <p>Cargando...</p>;
 
   const closed = form.status === "closed";
+  const confirmed = form.confirmed_count ?? 0;
+  const locked = confirmed > 0;
   const onChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
   async function onSubmit(e) {
@@ -73,6 +75,12 @@ export default function NeedForm() {
     <>
       <h1>{id ? "Editar necesidad" : "Nueva necesidad"}</h1>
       {closed && <p className="error">Esta necesidad está cerrada y no se puede modificar.</p>}
+      {locked && !closed && (
+        <p className="hint">
+          Hay {confirmed} voluntario(s) apuntado(s): no se pueden cambiar las fechas, el lugar ni
+          las habilidades, ni reducir las plazas por debajo de esa cifra.
+        </p>
+      )}
       <form onSubmit={onSubmit}>
         <fieldset className="plain" disabled={closed}>
           <label>
@@ -85,27 +93,27 @@ export default function NeedForm() {
           </label>
           <label>
             Municipio
-            <input name="municipality" value={form.municipality} onChange={onChange} required />
+            <input name="municipality" value={form.municipality} onChange={onChange} disabled={locked} required />
           </label>
           <label>
             Provincia
-            <input name="province" value={form.province} onChange={onChange} required />
+            <input name="province" value={form.province} onChange={onChange} disabled={locked} required />
           </label>
           <label>
             Código postal
-            <input name="postal_code" value={form.postal_code} onChange={onChange} maxLength={5} required />
+            <input name="postal_code" value={form.postal_code} onChange={onChange} maxLength={5} disabled={locked} required />
           </label>
           <label>
             Inicio
-            <input name="start_at" type="datetime-local" value={form.start_at} onChange={onChange} required />
+            <input name="start_at" type="datetime-local" value={form.start_at} onChange={onChange} disabled={locked} required />
           </label>
           <label>
             Fin
-            <input name="end_at" type="datetime-local" value={form.end_at} onChange={onChange} required />
+            <input name="end_at" type="datetime-local" value={form.end_at} onChange={onChange} disabled={locked} required />
           </label>
           <label>
             Voluntarios necesarios
-            <input name="volunteers_needed" type="number" min="1" value={form.volunteers_needed} onChange={onChange} required />
+            <input name="volunteers_needed" type="number" min={Math.max(1, confirmed)} value={form.volunteers_needed} onChange={onChange} required />
           </label>
 
           <h2>Habilidades requeridas</h2>
@@ -113,6 +121,7 @@ export default function NeedForm() {
             skills={skills}
             value={form.required_skills}
             onChange={(required_skills) => setForm({ ...form, required_skills })}
+            disabled={locked}
           />
         </fieldset>
 

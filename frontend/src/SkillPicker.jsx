@@ -7,7 +7,7 @@ const CATEGORY_LABELS = {
   coordination: "Coordinación",
 };
 
-export default function SkillPicker({ skills, value, onChange }) {
+export default function SkillPicker({ skills, value, onChange, disabled = false }) {
   const grouped = skills.reduce((acc, skill) => {
     (acc[skill.category] ||= []).push(skill);
     return acc;
@@ -28,6 +28,7 @@ export default function SkillPicker({ skills, value, onChange }) {
                 type="checkbox"
                 checked={value.includes(skill.id)}
                 onChange={() => toggle(skill.id)}
+                disabled={disabled}
               />
               {skill.name}
             </label>

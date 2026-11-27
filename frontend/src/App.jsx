@@ -9,8 +9,9 @@ import VolunteerProfile from "./pages/VolunteerProfile";
 import NeedForm from "./pages/NeedForm";
 import Needs from "./pages/Needs";
 import Availability from "./pages/Availability";
-import Candidates from "./pages/Candidates";
 import CompatibleNeeds from "./pages/CompatibleNeeds";
+import MyParticipations from "./pages/MyParticipations";
+import NeedParticipants from "./pages/NeedParticipants";
 
 export default function App() {
   return (
@@ -45,12 +46,16 @@ export default function App() {
           element={<ProtectedRoute role="volunteer"><Availability /></ProtectedRoute>}
         />
         <Route
-          path="/necesidades/:id/candidatos"
-          element={<ProtectedRoute role="organization"><Candidates /></ProtectedRoute>}
-        />
-        <Route
           path="/necesidades-compatibles"
           element={<ProtectedRoute role="volunteer"><CompatibleNeeds /></ProtectedRoute>}
+        />
+        <Route
+          path="/necesidades/:id/voluntarios"
+          element={<ProtectedRoute role="organization"><NeedParticipants /></ProtectedRoute>}
+        />
+        <Route
+          path="/mis-participaciones"
+          element={<ProtectedRoute role="volunteer"><MyParticipations /></ProtectedRoute>}
         />
       </Route>
     </Routes>
