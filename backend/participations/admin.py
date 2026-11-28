@@ -5,5 +5,6 @@ from .models import Participation
 
 @admin.register(Participation)
 class ParticipationAdmin(admin.ModelAdmin):
-    list_display = ("volunteer", "need", "status", "created_at", "ended_at")
-    list_filter = ("status",)
+    list_display = [f.name for f in Participation._meta.fields]
+    list_filter = ["status"]
+    list_per_page = 50
