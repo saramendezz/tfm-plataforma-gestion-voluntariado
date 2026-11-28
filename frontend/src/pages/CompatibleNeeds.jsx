@@ -1,10 +1,19 @@
 import { useEffect, useState } from "react";
 import api, { errorMessage } from "../api";
 import { formatDateTime } from "../dates";
+import useTitle from "../useTitle";
+
+function scoreLevel(score) {
+  if (score >= 75) return { key: "high", label: "Compatibilidad alta" };
+  if (score >= 50) return { key: "mid", label: "Compatibilidad media" };
+  return { key: "low", label: "Compatibilidad baja" };
+}
 
 export default function CompatibleNeeds() {
+  useTitle("Necesidades para mí");
   const [needs, setNeeds] = useState(null);
   const [error, setError] = useState("");
+  const [busyId, setBusyId] = useState(null);
   const [reloadKey, setReloadKey] = useState(0);
 
   useEffect(() => {
@@ -31,22 +40,26 @@ export default function CompatibleNeeds() {
     );
     if (!ok) return;
     setError("");
+    setBusyId(need.id);
     try {
       await api.post(`/needs/${need.id}/accept/`);
     } catch (err) {
       setError(errorMessage(err));
     }
+    setBusyId(null);
     setReloadKey((k) => k + 1);
   }
 
   async function leave(need) {
     if (!window.confirm(`¿Retirarte de «${need.title}»? Se liberará tu plaza.`)) return;
     setError("");
+    setBusyId(need.id);
     try {
       await api.post(`/participations/${need.participation_id}/withdraw/`);
     } catch (err) {
       setError(errorMessage(err));
     }
+    setBusyId(null);
     setReloadKey((k) => k + 1);
   }
 
@@ -59,42 +72,95 @@ export default function CompatibleNeeds() {
         apuntas: tus datos de contacto solo se muestran a la organización si aceptas.
       </p>
 
-      {error && <p className="error">{error}</p>}
-      {needs === null && <p>Cargando...</p>}
+      {error && <p className="error" role="alert">{error}</p>}
+      {needs === null && <p className="muted">Cargando…</p>}
       {needs && needs.length === 0 && !error && (
-        <p>
+        <p className="empty">
           Ahora mismo no hay necesidades compatibles. Comprueba que tu perfil tiene código postal
           y habilidades, que has indicado tu disponibilidad y que tu distancia máxima es suficiente.
         </p>
       )}
 
-      {needs?.map((n) => (
-        <article key={n.id} className="card">
-          <h2>
-            {n.title} <span className="score">{n.score}</span>
-            {n.participation_id && <span className="badge confirmed">Ya participas</span>}
-          </h2>
-          <p>
-            {n.organization_name} · {n.municipality} ({n.province}) · a {n.distance_km} km
-          </p>
-          <p>
-            {formatDateTime(n.start_at)} → {formatDateTime(n.end_at)} · Plazas libres: {n.spots_left} de{" "}
-            {n.volunteers_needed}
-          </p>
-          {n.description && <p>{n.description}</p>}
-          {n.skills_matched.length > 0 && <p>Habilidades tuyas que encajan: {n.skills_matched.join(", ")}</p>}
-          {n.skills_missing.length > 0 && <p>También se piden: {n.skills_missing.join(", ")}</p>}
-          <div className="actions">
-            {n.participation_id ? (
-              <button className="danger" onClick={() => leave(n)}>
-                Retirarme
-              </button>
-            ) : (
-              <button onClick={() => join(n)}>Apuntarme</button>
+      {needs?.map((n) => {
+        const score = Number(n.score);
+        const level = scoreLevel(score);
+        const joined = Boolean(n.participation_id);
+        const full = !joined && n.spots_left <= 0;
+        return (
+          <article key={n.id} className="card need">
+            <div className="need-head">
+              <h2>{n.title}</h2>
+              {joined && <span className="badge confirmed">Ya participas</span>}
+            </div>
+
+            <div className="scorebox">
+              <div className="scorelabel">
+                <span>{level.label}</span>
+                <strong>{Math.round(score)} / 100</strong>
+              </div>
+              <div
+                className={`scorebar ${level.key}`}
+                role="progressbar"
+                aria-label="Puntuación de compatibilidad"
+                aria-valuemin={0}
+                aria-valuemax={100}
+                aria-valuenow={Math.round(score)}
+              >
+                <span style={{ width: `${Math.max(0, Math.min(100, score))}%` }} />
+              </div>
+            </div>
+
+            <ul className="meta">
+              <li><span>Organización</span>{n.organization_name}</li>
+              <li><span>Lugar</span>{n.municipality} ({n.province}) · a {n.distance_km} km</li>
+              <li><span>Cuándo</span>{formatDateTime(n.start_at)} → {formatDateTime(n.end_at)}</li>
+              <li>
+                <span>Plazas</span>
+                {n.spots_left <= 0 ? "Completas" : `Quedan ${n.spots_left} de ${n.volunteers_needed}`}
+              </li>
+            </ul>
+
+            {n.description && <p>{n.description}</p>}
+
+            {(n.skills_matched.length > 0 || n.skills_missing.length > 0) && (
+              <div className="skills">
+                {n.skills_matched.length > 0 && (
+                  <p>
+                    <span className="skills-title">Tus habilidades que encajan</span>
+                    <span className="chips">
+                      {n.skills_matched.map((s) => (
+                        <span key={s} className="chip match">{s}</span>
+                      ))}
+                    </span>
+                  </p>
+                )}
+                {n.skills_missing.length > 0 && (
+                  <p>
+                    <span className="skills-title">También se piden</span>
+                    <span className="chips">
+                      {n.skills_missing.map((s) => (
+                        <span key={s} className="chip missing">{s}</span>
+                      ))}
+                    </span>
+                  </p>
+                )}
+              </div>
             )}
-          </div>
-        </article>
-      ))}
+
+            <div className="actions">
+              {joined ? (
+                <button className="danger" disabled={busyId === n.id} onClick={() => leave(n)}>
+                  Retirarme
+                </button>
+              ) : (
+                <button disabled={full || busyId === n.id} onClick={() => join(n)}>
+                  {full ? "Sin plazas" : "Apuntarme"}
+                </button>
+              )}
+            </div>
+          </article>
+        );
+      })}
     </>
   );
 }
